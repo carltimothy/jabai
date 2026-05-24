@@ -11,6 +11,14 @@ public class Transaction {
         expenses.add(expense);
     }
 
+    public boolean removeExpense(int index) {
+        if (index < 0 || index >= expenses.size()) {
+            return false;
+        }
+        expenses.remove(index);
+        return true;
+    }
+
     public ArrayList<Expense> getExpenses() {
         return expenses;
     }

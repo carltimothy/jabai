@@ -69,13 +69,26 @@ public class ExpenseTracker {
 
         System.out.print("Enter amount: ");
         double amount = scanner.nextDouble();
-        scanner.nextLine();
+        if (amount < 0) {
+            System.out.println("Amount should be a positive number.");
+            return;
+        } else {
+            scanner.nextLine();
+        }
 
         System.out.print("Enter date (YYYY-MM-DD): ");
         String date = scanner.nextLine();
 
         transaction.addExpense(new Expense(description, amount, date));
         System.out.println("Expense added successfully!");
+    }
+
+    public static void addExpense(String description, double amount, String date) {
+        transaction.addExpense(new Expense(description, amount, date));
+    }
+
+    public static boolean removeExpense(int index) {
+        return transaction.removeExpense(index);
     }
 
     public static void viewExpenses() {
@@ -90,6 +103,16 @@ public class ExpenseTracker {
         for (Expense e : allExpenses) {
             System.out.printf("%-4d %s\n", i++, e.toString());
         }
+        double b = budget;
+        double total = calculateTotal();
+        System.out.println("\nBudget: " + b);
+        if (budget > 0) {
+            if (total <= budget) {
+                System.out.println("Status: Within Budget");
+            } else if (total > budget) {
+                System.out.println("Status: Over Budget!");
+            }
+        }
     }
 
     public static double calculateTotal() {
@@ -98,13 +121,13 @@ public class ExpenseTracker {
 
     public static void showTotal() {
         double total = calculateTotal();
-        System.out.println("Total Expenses: " + total);
+        System.out.println("\nTotal Expenses: " + total);
         if (budget > 0) {
             System.out.println("Budget: " + budget);
-            if (total > budget) {
-                System.out.println("Warning: You have exceeded your budget!");
-            } else {
+            if (total <= budget) {
                 System.out.println("You are within your budget.");
+            } else if (total > budget) {
+                System.out.println("Warning: You have exceeded your budget!");
             }
         }
     }
@@ -114,6 +137,18 @@ public class ExpenseTracker {
         budget = scanner.nextDouble();
         scanner.nextLine();
         System.out.println("Budget set to: " + budget);
+    }
+
+    public static void setBudget(double b) {
+        budget = b;
+    }
+
+    public static double getBudget() {
+        return budget;
+    }
+
+    public static java.util.List<Expense> getExpensesList() {
+        return transaction.getExpenses();
     }
 
     public static void showWeeklySummary() {
