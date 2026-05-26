@@ -11,31 +11,27 @@ public class Transaction {
 
     public Transaction() {
         expenses = new ArrayList<>();
-        loadExpenses(); // Load existing expenses on startup
+        loadExpenses();
     }
 
-    // Add a new expense
     public void addExpense(Expense expense) {
         expenses.add(expense);
-        saveExpenses(); // Save to file on update
+        saveExpenses();
     }
 
-    // Remove an expense
     public boolean removeExpense(int index) {
         if (index < 0 || index >= expenses.size()) {
             return false;
         }
         expenses.remove(index);
-        saveExpenses(); // Save to file on update
+        saveExpenses();
         return true;
     }
 
-    // Get all expenses
     public ArrayList<Expense> getExpenses() {
         return expenses;
     }
 
-    // Calculate the total of all expenses
     public double getTotal() {
         double total = 0;
         for (Expense e : expenses) {
@@ -44,7 +40,6 @@ public class Transaction {
         return total;
     }
 
-    // Save expenses to a JSON file
     private void saveExpenses() {
         try (FileWriter writer = new FileWriter("data.json")) {
             Gson gson = new Gson();
@@ -54,7 +49,6 @@ public class Transaction {
         }
     }
 
-    // Load expenses from a JSON file
     private void loadExpenses() {
         try (FileReader reader = new FileReader("data.json")) {
             Gson gson = new Gson();
@@ -63,7 +57,6 @@ public class Transaction {
                 expenses = new ArrayList<>();
             }
         } catch (IOException e) {
-            // File doesn't exist yet, initialize empty expenses list
             expenses = new ArrayList<>();
         }
     }
