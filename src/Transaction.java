@@ -23,6 +23,10 @@ public class Transaction {
         return expenses;
     }
 
+    public ArrayList<Expense> expenses() {
+        return expenses;
+    }
+
     public double getTotal() {
         double total = 0;
         for (Expense e : expenses) {

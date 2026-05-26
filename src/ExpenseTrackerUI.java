@@ -53,17 +53,21 @@ public class ExpenseTrackerUI extends JFrame {
         topPanel.add(budgetPanel, BorderLayout.SOUTH);
         topPanel.add(removePanel, BorderLayout.CENTER);
 
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel bottomPanel = new JPanel(new BorderLayout(12, 0));
+        JPanel bottomLeftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         totalLabel = new JLabel("Total: 0.00");
-        budgetLabel = new JLabel("Budget: 0.00");
+        budgetLabel = new JLabel("Budget: 0.00 | ");
         statusLabel = new JLabel("Status: ");
         JButton refreshBtn = new JButton("Refresh");
         JButton chartBtn = new JButton("Show Chart");
-        bottomPanel.add(totalLabel);
-        bottomPanel.add(budgetLabel);
-        bottomPanel.add(statusLabel);
-        bottomPanel.add(refreshBtn);
-        bottomPanel.add(chartBtn);
+        bottomLeftPanel.add(totalLabel);
+        bottomLeftPanel.add(budgetLabel);
+        bottomLeftPanel.add(refreshBtn);
+        bottomLeftPanel.add(chartBtn);
+        bottomRightPanel.add(statusLabel);
+        bottomPanel.add(bottomLeftPanel, BorderLayout.WEST);
+        bottomPanel.add(bottomRightPanel, BorderLayout.EAST);
 
         add(topPanel, BorderLayout.NORTH);
         add(scroll, BorderLayout.CENTER);
@@ -74,7 +78,11 @@ public class ExpenseTrackerUI extends JFrame {
             double amt;
             try {
                 amt = Double.parseDouble(amountField.getText().trim());
+                statusLabel.setText("Status: Add expense");
+                statusLabel.setForeground(Color.DARK_GRAY);
             } catch (Exception ex) {
+                statusLabel.setText("Status: " + ex);
+                statusLabel.setForeground(Color.RED);
                 JOptionPane.showMessageDialog(this, "Invalid amount");
                 return;
             }
@@ -89,12 +97,26 @@ public class ExpenseTrackerUI extends JFrame {
             }
         });
 
+        chartBtn.addActionListener(e -> {
+            if (ExpenseTracker.getExpensesList().isEmpty()) {
+                statusLabel.setText("Status: Failed to show chart. Expenses list is empty!");
+                statusLabel.setForeground(Color.RED);
+            } else {
+                statusLabel.setText("Status: Showing Chart.");
+                statusLabel.setForeground(Color.DARK_GRAY);
+                ExpenseTracker.showChart();
+            }
+        });
+
         setBudgetBtn.addActionListener(e -> {
             try {
                 double b = Double.parseDouble(budgetField.getText().trim());
                 ExpenseTracker.setBudget(b);
+                statusLabel.setText("Status: Budget set");
+                statusLabel.setForeground(Color.DARK_GRAY);
                 refreshList();
             } catch (Exception ex) {
+                statusLabel.setText("Status: " + ex);
                 JOptionPane.showMessageDialog(this, "Invalid budget");
             }
         });
@@ -104,17 +126,20 @@ public class ExpenseTrackerUI extends JFrame {
                 int index = Integer.parseInt(removeField.getText().trim()) - 1;
                 if (ExpenseTracker.removeExpense(index)) {
                     removeField.setText("");
+                    statusLabel.setText("Status: Removed successfully");
+                    statusLabel.setForeground(Color.DARK_GRAY);
                     refreshList();
                 } else {
                     JOptionPane.showMessageDialog(this, "Please enter a valid expense number");
                 }
             } catch (Exception ex) {
+                statusLabel.setText("Status: " + ex);
+                statusLabel.setForeground(Color.RED);
                 JOptionPane.showMessageDialog(this, "Please enter a valid expense number");
             }
         });
 
         refreshBtn.addActionListener(e -> refreshList());
-        chartBtn.addActionListener(e -> ExpenseTracker.showChart());
 
         refreshList();
     }
@@ -128,22 +153,33 @@ public class ExpenseTrackerUI extends JFrame {
         }
         listArea.setText(sb.toString());
         double total = ExpenseTracker.calculateTotal();
-        double budget = ExpenseTracker.getBudget();
         totalLabel.setText(String.format("Total: %.2f", total));
-        if (budget > 0) {
+        if (ExpenseTracker.getBudget() > 0) {
+            budgetStatus();
+        } else {
+            budgetStatus();
+        }
+    }
+
+    public String budgetStatus() {
+        double total = ExpenseTracker.calculateTotal();
+        double budget = ExpenseTracker.getBudget();
+        if (budget >= 0) {
             budgetLabel.setText(String.format("Budget: %.2f", budget));
             if (total <= budget) {
-                statusLabel.setText("Status: Within Budget");
-                statusLabel.setForeground(new Color(0, 128, 0));
+                String b = "Within Budget";
+                budgetLabel.setText("Budget: " + budget + "|" + b);
+                budgetLabel.setForeground(new Color(0, 128, 0));
+                return b;
             } else if (total > budget) {
-                statusLabel.setText("Status: Over Budget");
-                statusLabel.setForeground(Color.RED);
+                String b = "Over Budget!";
+                budgetLabel.setText("Budget: " + budget + "|" + b);
+                budgetLabel.setForeground(Color.RED);
+                return b;
             }
-        } else {
-            budgetLabel.setText("Budget: 0.00");
-            statusLabel.setText("Status: ");
-            statusLabel.setForeground(Color.DARK_GRAY);
         }
+        String empty = "";
+        return empty;
     }
 
     public static void main(String[] args) {
