@@ -9,7 +9,7 @@ public class ExpenseTrackerUI extends JFrame {
     private JLabel statusLabel;
 
     public ExpenseTrackerUI() {
-        super("Expense Tracker");
+        super("CentSible: Expense Tracker");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 600);
         setLocationRelativeTo(null);
@@ -61,10 +61,12 @@ public class ExpenseTrackerUI extends JFrame {
         statusLabel = new JLabel("Status: ");
         JButton refreshBtn = new JButton("Refresh");
         JButton chartBtn = new JButton("Show Chart");
+        JButton resetBtn = new JButton("Reset");
         bottomLeftPanel.add(totalLabel);
         bottomLeftPanel.add(budgetLabel);
         bottomLeftPanel.add(refreshBtn);
         bottomLeftPanel.add(chartBtn);
+        bottomLeftPanel.add(resetBtn);
         bottomRightPanel.add(statusLabel);
         bottomPanel.add(bottomLeftPanel, BorderLayout.WEST);
         bottomPanel.add(bottomRightPanel, BorderLayout.EAST);
@@ -97,6 +99,18 @@ public class ExpenseTrackerUI extends JFrame {
             }
         });
 
+        resetBtn.addActionListener(e -> {
+            descriptionField.setText("");
+            amountField.setText("");
+            dateField.setText("");
+            budgetField.setText("");
+            removeField.setText("");
+            ExpenseTracker.resetAll();
+            refreshList();
+            statusLabel.setText("Status: Reset");
+            statusLabel.setForeground(Color.DARK_GRAY);
+        });
+
         chartBtn.addActionListener(e -> {
             if (ExpenseTracker.getExpensesList().isEmpty()) {
                 try {
@@ -115,10 +129,16 @@ public class ExpenseTrackerUI extends JFrame {
         setBudgetBtn.addActionListener(e -> {
             try {
                 double b = Double.parseDouble(budgetField.getText().trim());
-                ExpenseTracker.setBudget(b);
-                statusLabel.setText("Status: Budget set");
-                statusLabel.setForeground(Color.DARK_GRAY);
-                refreshList();
+                if (Double.compare(b, 0.0) >= 0 && Double.doubleToRawLongBits(b) != Double.doubleToRawLongBits(-0.0)) {
+                    ExpenseTracker.setBudget(b);
+                    statusLabel.setText("Status: Budget set");
+                    statusLabel.setForeground(Color.DARK_GRAY);
+                    refreshList();
+                } else {
+                    statusLabel.setText("Status: Enter a positive number");
+                    statusLabel.setForeground(Color.RED);
+                    JOptionPane.showMessageDialog(this, "Enter a positive number");
+                }
             } catch (Exception ex) {
                 statusLabel.setText("Status: " + ex);
                 statusLabel.setForeground(Color.RED);

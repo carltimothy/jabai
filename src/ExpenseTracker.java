@@ -143,6 +143,11 @@ public class ExpenseTracker {
         budget = b;
     }
 
+    public static void resetAll() {
+        transaction.clearExpenses();
+        budget = 0;
+    }
+
     public static double getBudget() {
         return budget;
     }

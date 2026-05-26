@@ -27,6 +27,10 @@ public class Transaction {
         return expenses;
     }
 
+    public void clearExpenses() {
+        expenses.clear();
+    }
+
     public double getTotal() {
         double total = 0;
         for (Expense e : expenses) {
