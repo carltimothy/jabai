@@ -151,7 +151,6 @@ public class ExpenseTrackerUI extends JFrame {
             statusLabel.setForeground(Color.DARK_GRAY);
             refreshList();
         });
-
         refreshList();
     }
 
